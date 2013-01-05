@@ -17,11 +17,11 @@ using namespace std;
 namespace shtween
 {
 	typedef void (*tween_callback_fun)();
-	typedef float (*easing_fun)(float t, float b, float c, float d);
 	
 	namespace easing
 	{
-		inline float linear(float t, float b, float c, float d) {
+		template <typename T>
+		inline T linear(float t, const T &b, const T &c, float d) {
 			return c*t/d + b;
 		}
 	}
@@ -45,7 +45,9 @@ namespace shtween
 	
 	template <typename T>
 	struct ValueTween : Tween
-	{		
+	{
+		typedef T (*easing_fun)(float t, const T &b, const T &c, float d);
+		
 		easing_fun easing;
 		float duration;
 		float t;
@@ -54,7 +56,7 @@ namespace shtween
 		T &property;
 		T start_value, end_value;
 		
-		ValueTween(T &property, T value, float duration = 1.0f) : property(property), running(false), end_value(value), duration(duration), t(0), easing(easing::linear) {
+		ValueTween(T &property, T value, float duration = 1.0f) : property(property), running(false), end_value(value), duration(duration), t(0), easing(easing::linear<T>) {
 			
 		}
 		
