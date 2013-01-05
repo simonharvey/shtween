@@ -150,9 +150,17 @@ namespace shtween
 	protected:
 		TweenGroupBuilder *parent;
 		TweenGroup *result;
+		bool m_ownsResult;
 		
 	public:
-		TweenGroupBuilder(TweenGroupBuilder *parent = NULL) : parent(parent) {}
+		TweenGroupBuilder(TweenGroupBuilder *parent = NULL) : parent(parent), result(NULL) {
+		
+		}
+		
+		~TweenGroupBuilder() {
+			if (m_ownsResult)
+				delete result;
+		}
 		
 		template <typename T>
 		TweenGroupBuilder group()
@@ -171,13 +179,18 @@ namespace shtween
 		
 		TweenGroupBuilder &end()
 		{
-			if (parent)
-				parent->result->children.push_back(result);
+			if (parent && result)
+				parent->end_child(*this);
 			return *parent;
 		}
 		
 		virtual Tween *get() {
+			m_ownsResult = false;
 			return result;
+		}
+		
+		void end_child(TweenGroupBuilder &child) {
+			result->children.push_back(child.get());
 		}
 	};
 	
@@ -185,19 +198,8 @@ namespace shtween
 	class TweenBuilder : public TweenGroupBuilder
 	{
 	public:
-		TweenBuilder()
-		{
-			result = new Sequence();
-		}
-		
-		~TweenBuilder()
-		{
-			//delete result;
-		}
-		
-		virtual Tween *get()
-		{
-			return *result->children.begin();
+		TweenBuilder() {
+			result = new Sequence;
 		}
 	};
 };
