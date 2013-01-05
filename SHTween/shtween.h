@@ -129,7 +129,7 @@ namespace shtween
 			
 			for (auto *c : children) {
 				if (!c->complete()) {
-					timeleft = max(c->update(dt), timeleft);
+					timeleft = std::max(c->update(dt), timeleft);
 					m_complete &= c->complete();
 				}
 			}
