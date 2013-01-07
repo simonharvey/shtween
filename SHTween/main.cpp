@@ -33,7 +33,7 @@ Foo operator*(const Foo &b, const float &a) {
 }
 
 Foo operator/(const Foo &a, const float &b) {
-	return (Foo){a.x/b, a.y*b};
+	return (Foo){a.x/b, a.y/b};
 }
 
 ostream &operator <<(ostream &o, const Foo &foo) {
